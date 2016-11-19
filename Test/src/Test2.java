@@ -7,9 +7,10 @@ import javax.swing.*;
 public class Test2 { //jw
 	
 	public static void main(String[] args) {
-		int counter = 10;
+		int life_counter = 10;
 		ImageIcon back = new ImageIcon("back.jpg");
 		ImageIcon heart = new ImageIcon("heart.jpg");
+		ImageIcon heart2 = new ImageIcon("heart2.jpg");
 		ImageIcon send = new ImageIcon("send.jpg");
 		JFrame cp = new JFrame("The card game");
 		JPanel text_input = new JPanel();
@@ -20,6 +21,10 @@ public class Test2 { //jw
 		JPanel Problem_panel = new JPanel();
 		JTextField input_line = new JTextField("type here",10);
 		JTextArea MessageArea = new JTextArea("Chatting Message here");
+		JScrollPane Message_pane = new JScrollPane();
+		JPanel life_panel = new JPanel();
+		JLabel life_arr[] = new JLabel[10];
+		boolean life_state[] = {true,true,true,true,true,true,true,true,true,true};
 		
 		card_panel.setLayout(null);
 		card_panel.setBounds(50, 450, 1060, 250);
@@ -61,9 +66,10 @@ public class Test2 { //jw
 			}	
 		});
 		
-		JLabel life = new JLabel("X "+counter,heart,SwingConstants.CENTER);
-		life.setBounds(1180,600,100,34);
-		life.setBackground(new Color(245,209,183));
+		life_panel.setLayout(null);
+		setlife(life_panel,life_arr,heart);
+		life_panel.setBounds(1150, 600, 200, 68);
+		life_panel.setBackground(new Color(245,209,183));
 		
 		JButton send_button = new JButton(send);
 		send_button.setBounds(265,5,80,30);
@@ -78,13 +84,20 @@ public class Test2 { //jw
 		
 		MessageArea.setBackground(new Color(136,133,150));
 		MessageArea.setEditable(false);
-		MessageArea.setBounds(10, 10, 350, 320);
+		MessageArea.setLayout(null);
+		MessageArea.setBounds(0, 0, 350, 260);
+		MessageArea.setLineWrap(true);
+		
+		Message_pane.setBounds(10,10,350,260);
+		Message_pane.setViewportView(MessageArea);
+		Message_pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		Message_pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		
 		chat_panel.setLayout(null);
 		chat_panel.setBounds(1100, 50, 370, 345);
 		chat_panel.setBorder(BorderFactory.createSoftBevelBorder(0));
 		chat_panel.add(text_input);
-		chat_panel.add(MessageArea);
+		chat_panel.add(Message_pane);
 		
 		timer.setBounds(900,15,100,30);
 		timer.setBorder(BorderFactory.createBevelBorder(1));
@@ -102,13 +115,40 @@ public class Test2 { //jw
 		
 		cp.setLayout(null);
 		cp.setBounds(250,150,1500,800);
-		//cp.setBackground(new Color(136,133,164));
-		cp.add(life);
+		cp.add(life_panel);
 		cp.add(card_panel);
 		cp.add(chat_panel);
 		cp.add(Problem_panel);
 		cp.setVisible(true);
 	
 	cp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+	public static void setlife(JPanel life_panel,JLabel life_arr[],ImageIcon heart) // initial setting
+	{
+		int i;
+		int width = 40 , height = 34;
+		
+		for(i=0; i<10; i++)
+		{
+			life_arr[i] = new JLabel();
+			life_arr[i].setIcon(heart);
+			life_arr[i].setBounds((i%5)*width,(i/5)*height,width,height);
+			life_panel.add(life_arr[i]);
+		}
+	}
+	
+	public static void update_life(boolean life_state[],JLabel life_arr[],ImageIcon heart2,int counter) // ActionListener call this method to update current life.
+	{		
+		int i;
+		int width = 40 , height = 34;
+		
+		for(i=counter; i<10; i++)
+		{
+			if(life_state[i] == true)
+				life_state[i] = false;
+			life_arr[i].setIcon(heart2);
+			life_arr[i].setBounds((i%5)*width,(i/5)*height,width,height);
+		}
 	}
 }
