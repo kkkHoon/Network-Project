@@ -120,6 +120,7 @@ public class Test2 { //jw
 		cp.add(chat_panel);
 		cp.add(Problem_panel);
 		cp.setVisible(true);
+		cp.setResizable(false);
 	
 	cp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
