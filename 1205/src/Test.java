@@ -60,6 +60,9 @@ public class Test extends JPanel{ //jw
 	private Exchange card_exchange;
 	private ArrayList<JButton> answers;
 	
+	private JLabel life_arr[] = new JLabel[10];
+	boolean life_state[] = {true,true,true,true,true,true,true,true,true,true};
+	
 	private URL url;
 	private Clip clip;
 	private Clip temp_clip;
@@ -72,6 +75,8 @@ public class Test extends JPanel{ //jw
 	static int timer_set = 30;
 	private static int attacked = 0;
 	private int i;
+	
+	private MouseListener answer_button_listener;
 	
 	public Test(Client client)
 	{
@@ -121,9 +126,6 @@ public class Test extends JPanel{ //jw
 		input_line = new JTextField("Chat message input line",10);
 		MessageArea = new JTextArea("");
 		Message_pane = new JScrollPane();
-
-		JLabel life_arr[] = new JLabel[10];
-		boolean life_state[] = {true,true,true,true,true,true,true,true,true,true};
 
 		life_counter = 10;
 		total_life.setLayout(new GridLayout(4,3,2,2));
@@ -185,13 +187,24 @@ public class Test extends JPanel{ //jw
 		problem.setIcon(temp);
 				
 		answers = new ArrayList<JButton>();
+		answer_button_listener = new MouseListener()
+		{
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("Clicked!!!!!!");
+				client.setAnswer(answers.indexOf(e.getSource()) + 1); // index는 0부터 시작하므로 + 1을해줘서 정답 범위는 1 ~ 4 가 됨.
+			}
+			public void mouseEntered(MouseEvent e) {}
+			public void mouseExited(MouseEvent e) {}
+			public void mousePressed(MouseEvent e) {}
+			public void mouseReleased(MouseEvent e) {}
+		};
 		for(i=0; i<4; i++)
 		{
 			answers.add(i,new JButton());
 			Problem_panel.add(answers.get(i));
 			answers.get(i).setBounds(150 + 200*i, 320, 100, 50);
-			answers.get(i).setEnabled(false);
-			//answers.get(i).addMouseListener();
+			//answers.get(i).setEnabled(false);
+			answers.get(i).addMouseListener(answer_button_listener);
 		}
 		answers.get(0).setIcon(one);
 		answers.get(1).setIcon(two);
@@ -300,8 +313,9 @@ public class Test extends JPanel{ //jw
 				timer.setText(String.valueOf(timer_set)+" seconds.");
 				if(timer_set==0){
 					life_counter--;
-					timer.setText("---");//이거는 그저 확인용 나중에는 지우기
+					update_life();
 					timer_set=30;
+					break;
 				}
 			}
 		}
@@ -359,12 +373,12 @@ public class Test extends JPanel{ //jw
 		}
 	}
 
-	public void update_life(boolean life_state[],JLabel life_arr[],ImageIcon heart2,int counter) // ActionListener call this method to update current life.
+	public void update_life() // ActionListener call this method to update current life.
 	{		
 		int i;
 		int width = 40 , height = 34;
 
-		for(i=counter; i<10; i++)
+		for(i=life_counter; i<10; i++)
 		{
 			if(life_state[i] == true)
 				life_state[i] = false;
@@ -421,6 +435,11 @@ public class Test extends JPanel{ //jw
 		}
 	}
 	
+	public void start_re_on()
+	{
+		temp_clip.close();
+		clip.start();
+	}
 	public void music_on(int k)
 	{
 		try 
@@ -429,8 +448,8 @@ public class Test extends JPanel{ //jw
 			temp_clip = AudioSystem.getClip();
 			temp_clip.open(audioIn);
 			temp_clip.start();
-			if(!temp_clip.isOpen())
-				clip.start();
+			//if(!temp_clip.isOpen())
+				//clip.start();
 		} catch (Exception ex) {
 			System.out.println("sound exception");
 		}
@@ -445,6 +464,11 @@ public class Test extends JPanel{ //jw
 	{
 		state[k] = true;
 		this.repaint();
+		try {
+			Thread.sleep(5000); // 5초동안 기다렸다가
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	public void logo_off(int k)
 	{
@@ -468,5 +492,29 @@ public class Test extends JPanel{ //jw
 	public void setAttack(int i)
 	{
 		attacked = i;
+		if(attacked == 1)
+		{
+			input_line.setEditable(false);
+			for(int k=0; k<4; k++)
+				answers.get(k).setEnabled(true);
+		}
+		else
+		{
+			input_line.setEditable(true);
+			for(int k=0; k<4; k++)
+				answers.get(k).setEnabled(false);
+		}	
+	}
+	public Clip getClip()
+	{
+		return temp_clip;
+	}
+	public String getLoot()
+	{
+		ArrayList<Integer> loot= card_panel.get_info();
+		String result ="";
+		for(i=0; i<5; i++)
+			result = result + loot.get(i);
+		return result;
 	}
 }

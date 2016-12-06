@@ -103,6 +103,13 @@ public class Server {
                 
                 out.println("START");
                 out.println("SEND"+1+2+3);
+                try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                out.println("ATK");
                 while (true) 
                 {
                     String input = in.readLine();
