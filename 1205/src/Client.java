@@ -17,6 +17,7 @@ public class Client {
 	private static JFrame frame;
 	private Test temp;
 	private ImageIcon icon = new ImageIcon("icon.png");
+	private int answer = 0;
 	
 	public Client(){
 		temp = new Test(this);
@@ -74,42 +75,53 @@ public class Client {
 			} else if (line.startsWith("START")){
 				temp.start_on();
 				temp.logo_on(0);  // 로고를 켰다가
-				try {
-					Thread.sleep(5000); // 5초동안 기다렸다가
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 				temp.logo_off(0);  // 로고를 끈다.
-				//temp.music_change(1);
 			} else if (line.startsWith("WHO")) {
 				System.out.println("who~");
 				// 누구를 공격할지 결정
 				// 공격결정하는데 시간제한있으므로 timer 작동
 			} else if (line.startsWith("ATK")) {
-				System.out.println("My probelm is "+Integer.valueOf(line.substring(3)));
-				// 공격받았다는 로고 띄우기
-				// 공격받았을 때 음악 틀기
-				// 자물쇠 이미지를 채팅창에 덮어서 안보이게 아기 또는 inpt_text 로 대화못보내게 하기
-				// 문제 버튼들에게 이벤트 추가.
+				//System.out.println("My probelm is "+Integer.valueOf(line.substring(3)));
+				temp.setAttack(1); // 자물쇠 이미지를 채팅창에 덮어서 안보이게 아기 또는 inpt_text 로 대화못보내게 하기
+				temp.music_change(1); // 공격받았을 때 음악 틀기
+				temp.logo_on(2);// 공격받았다는 로고 띄우기
+				temp.logo_off(2); // 로고를 끈다.
+				while(temp.getClip().isOpen() && answer != 0){}; // 타이머가 다 되거나 정답을 누르지 않은상태면 계속 while문 돌아감.
+				temp.start_re_on(); // 다시 배경음악을 킨다.
+				temp.setAttack(0);
+				//temp.stopwatch();
+				out.println("ANSWER"+answer); // 문제 버튼들에게 이벤트 추가되어서 answer값을 바꾼 것.
+				
 				// 같이 온 문제번호를 찾아서 문제 Label부분에다가 덮어씌우기
 				// timer 작동
 			} else if (line.startsWith("NATK")) {
 				// 같이 온 문제번호를 찾아서 문제 Lbel부분에다가 덮어씌우기
 			} else if (line.startsWith("CORRECT")) {
-				// correct 로고 띄어주기
-				// 맞았다는 음악 잠깐 틀어주기 띄링~ 그리고 다시 배경음악으로 전호나
+				temp.music_change(2); // 맞았다는 음악 잠깐 틀어주기 띄링~
+				temp.logo_on(3);// correct 로고 띄어주기
+				temp.logo_off(3);
+				while(temp.getClip().isOpen()){}; // 맞았다는 효과음 끝날 때가지 기다렸다가
+				temp.start_re_on(); // 멈췄던 부분부터 다시 배경음악을 킨다
+				out.println("ACK");			
 			} else if (line.startsWith("WRONG")) {
-				// wrong 로고 띄어주기
-				// 틀렸다는 음악 잠깐 틀어주기
+				temp.music_change(3);
+				temp.logo_on(4);
+				temp.logo_off(4);
+				while(temp.getClip().isOpen()){}; // 맞았다는 효과음 끝날 때가지 기다렸다가
+				temp.start_re_on(); // 멈췄던 부분부터 다시 배경음악을 킨다
+				out.println("ACK");
 			} else if (line.startsWith("LOSE")) {
-				// 졋다는 로고 띄어주기
-				// 죽었다는 음악재생
-				// 내 덱에 남아있는 card_info를 string형태로 변환해서 서버에게 보내주기
+				temp.music_change(5); // 죽었다는 음악재생
+				temp.logo_on(6);// 졋다는 로고 띄어주기
+				temp.logo_off(6);
+				out.println("LOOT"+temp.getLoot()); // 내 덱에 남아있는 card_info를 string형태로 변환해서 서버에게 보내주기	 공격자의 전리품	
 			} else if (line.startsWith("YOUR_TURN")) {
-				// 내 턴이라는 로고 듸어주기
+				temp.logo_on(1);
+				temp.logo_off(1);
 			} else if (line.startsWith("WIN")) {
-				// 이겼다는 이미지 로고 띄어주기
-				// 이겼다는 음악재생
+				temp.music_on(4); // 이겼다는 음악재생
+				temp.logo_on(5); // 이겼다는 이미지 로고 띄어주기
+				// 게임 끝
 			} else if (line.startsWith("LIST")) {
 				// 진행창 이미지 업데이트 해주기
 				// 바뀐 유저의 LABEL부분에 border를 깜빡깜빡 켰다 껐다를 반복하는 함수를 실행시키고 몇초후에 그 함수 꺼버리기
@@ -123,5 +135,9 @@ public class Client {
 		client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		client.run();
 	}
-
+	
+	public void setAnswer(int k)
+	{
+		answer = k;
+	}
 }
